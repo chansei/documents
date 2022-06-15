@@ -5,4 +5,4 @@
 - 断り書きが無い限り、更新日時点の情報を載せています
 - 環境によっては操作や挙動が違います
 - 「サンプルファイル」があるものはリンクを右クリックしてから「名前をつけてリンク先を保存」でファイルをダウンロードできます
-- 一応文責は[@Chansei](https://twitter.com/Chansei_or){:target="_blank"}が負いますが、自己責任でお願いします
+- 一応文責は<a href="https://twitter.com/Chansei_or" target="_blank">@Chansei</a>が負いますが、自己責任でお願いします
