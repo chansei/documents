@@ -7,7 +7,7 @@ from datetime import datetime
 from tkinter import filedialog
 
 ############################
-BUILD_VER = '1.0.2'
+BUILD_VER = '1.0.3'
 ############################
 
 logger = logging.getLogger()
@@ -24,6 +24,18 @@ def main():
         logger.error('フォルダー未設定')
         _ = input('何かキーを押すと終了します...')
         return
+    
+    out_dir = dst+'\\'+'@出力'
+    if os.path.exists(out_dir):
+        print(f'出力先のフィルダーは既に存在しています')
+        ans = input(f'削除しますか？(y/n)')
+        if ans=='y':
+            try:
+                shutil.rmtree(out_dir)
+                print(f'削除しました')
+            except Exception:
+                print(f'失敗しました')
+                logger.error('出力先フォルダー削除失敗',exc_info=True)
 
     files = os.listdir(dst)
     dst_dirs = [f for f in files if os.path.isdir(os.path.join(dst, f))]
@@ -36,19 +48,21 @@ def main():
 
     print(f'出力先のフォルダーを作成中...')
     try:
-        out_dir = dst+'\\'+'@出力'
         os.mkdir(out_dir)
         print(f'完了しました')
     except Exception:
-        print(f'既に存在しているか、アクセス権限がありません')
+        print(f'失敗しました')
         logger.error('出力先フォルダー作成失敗',exc_info=True)
 
     for i, dst_dir in enumerate(dst_dirs):
+        find_flag = False
         print(color(f'{str(len(dst_dirs))}個中{str(i+1)}個目のフォルダーを検索中...'))
         for cand in glob.glob(src+'/**/', recursive=True):
             cand_dir_name_list = cand.split('\\')
             cand_dir_name = cand_dir_name_list[len(cand_dir_name_list)-2]
             if os.path.isdir(cand) and dst_dir==cand_dir_name:
+                find_flag = True
+                print(f'"{dst_dir}"が存在します')
                 print(f'コピーしています...')
                 logger.info(f"コピー元：{cand}, コピー先：{out_dir}\{dst_dir}")
                 try:
@@ -58,10 +72,11 @@ def main():
                 except Exception:
                     print(f'エラーが発生し、その内容はログに出力されました')
                     logger.error('コピー失敗',exc_info=True)
-            else:
-                logger.info(f"存在しません：{dst_dir}")
-                print(f'フィルダーが見つかりませんでした')
+        if not find_flag:
+            logger.info(f"存在しません：{dst_dir}")
+            print(f'"{dst_dir}"は存在しません')
 
+    print(color(f'検索が完了しました'))
     _ = input('何かキーを押すと終了します...')
 
 def color(txt): # 文字の色づけ
