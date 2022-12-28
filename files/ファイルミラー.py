@@ -7,7 +7,7 @@ from datetime import datetime
 from tkinter import filedialog
 
 ############################
-BUILD_VER = '1.0.3'
+BUILD_VER = '1.0.4'
 ############################
 
 logger = logging.getLogger()
@@ -43,7 +43,7 @@ def main():
     print(f'基準フォルダー：{dst}')
     print(f'検索対象フォルダー：{src}')
 
-    print(color(f'{len(dst_dirs)}個のフォルダーが見つかりました'))
+    print(yellow(f'{len(dst_dirs)}個のフォルダーが見つかりました'))
     logger.info(f'基準フォルダー：{dst}, 検索対象フォルダー：{src}, {len(dst_dirs)}個のフォルダー')
 
     print(f'出力先のフォルダーを作成中...')
@@ -54,9 +54,11 @@ def main():
         print(f'失敗しました')
         logger.error('出力先フォルダー作成失敗',exc_info=True)
 
+    not_exist_dirs = []
+
     for i, dst_dir in enumerate(dst_dirs):
         find_flag = False
-        print(color(f'{str(len(dst_dirs))}個中{str(i+1)}個目のフォルダーを検索中...'))
+        print(yellow(f'{str(len(dst_dirs))}個中{str(i+1)}個目のフォルダーを検索中...'))
         for cand in glob.glob(src+'/**/', recursive=True):
             cand_dir_name_list = cand.split('\\')
             cand_dir_name = cand_dir_name_list[len(cand_dir_name_list)-2]
@@ -73,14 +75,24 @@ def main():
                     print(f'エラーが発生し、その内容はログに出力されました')
                     logger.error('コピー失敗',exc_info=True)
         if not find_flag:
-            logger.info(f"存在しません：{dst_dir}")
+            not_exist_dirs.append(dst_dir)
             print(f'"{dst_dir}"は存在しません')
 
-    print(color(f'検索が完了しました'))
+    print(yellow(f'検索が完了しました'))
+
+    if not_exist_dirs:
+        for dir in not_exist_dirs:
+            logger.warning(f"存在しません：{dir}")
+        print(red(f'存在しないフォルダーが{len(not_exist_dirs)}個ありました'))
+        print(f'詳細はログファイルを確認してください')
+
     _ = input('何かキーを押すと終了します...')
 
-def color(txt): # 文字の色づけ
+def yellow(txt): # 文字の色づけ
     return '\033[33m'+txt+'\033[0m'
+
+def red(txt):
+    return '\033[31m'+txt+'\033[0m'
 
 if __name__ == '__main__':
     log_file_name = '{:%Y-%m-%d-%H%M%S}'.format(datetime.now())+'.log'
@@ -88,5 +100,5 @@ if __name__ == '__main__':
     print(f'***CopyRight 2022 Chansei***')
     print(f'***Build Version {BUILD_VER}***')
     print(f'このソフトウェアはMITライセンスのもと公開されています')
-    print(color(f'ログファイル：{log_file_name}'))
+    print(yellow(f'ログファイル：{log_file_name}'))
     main()
