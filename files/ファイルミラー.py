@@ -7,7 +7,7 @@ from datetime import datetime
 from tkinter import filedialog
 
 ############################
-BUILD_VER = '1.0.4'
+BUILD_VER = '1.0.5'
 ############################
 
 logger = logging.getLogger()
@@ -64,12 +64,14 @@ def main():
             cand_dir_name = cand_dir_name_list[len(cand_dir_name_list)-2]
             if os.path.isdir(cand) and dst_dir==cand_dir_name:
                 find_flag = True
-                print(f'"{dst_dir}"が存在します')
+                print(f"コピー元：{cand}")
                 print(f'コピーしています...')
                 logger.info(f"コピー元：{cand}, コピー先：{out_dir}\{dst_dir}")
                 try:
-                    print(cand)
-                    shutil.copytree(cand, out_dir+'\\'+dst_dir)
+                    if os.path.exists(out_dir+'\\'+dst_dir):
+                        logger.warning(f'上書きを行います：{out_dir}\{dst_dir}')
+                        print(f'既にフォルダーが存在するため上書きを行います')
+                    shutil.copytree(cand, out_dir+'\\'+dst_dir, dirs_exist_ok=True)
                     print(f'完了しました')
                 except Exception:
                     print(f'エラーが発生し、その内容はログに出力されました')
@@ -99,6 +101,7 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG, filename=log_file_name, format="%(asctime)s %(levelname)-7s %(message)s")
     print(f'***CopyRight 2022 Chansei***')
     print(f'***Build Version {BUILD_VER}***')
-    print(f'このソフトウェアはMITライセンスのもと公開されています')
+    print(f'・このソフトウェアはMITライセンスのもと公開されています')
+    print(f'・使用前に必ず付属のmdファイルを確認してください')
     print(yellow(f'ログファイル：{log_file_name}'))
     main()
